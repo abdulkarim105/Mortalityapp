@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>Patients</h2>
+
+  {% if perms.patients.add_patient %}
+    <a class="btn btn-primary" href="{% url 'patients:patient_create' %}">
+      New patient
+    </a>
+  {% endif %}
+</div>
+
+<form method="get" class="mb-3">
+  <div class="input-group">
+    <input type="text"
+           name="q"
+           class="form-control"
+           placeholder="Search by MRN or patient name..."
+           value="{{ q }}">
+    <button class="btn btn-outline-secondary" type="submit">Search</button>
+    {% if q %}
+      <a class="btn btn-outline-danger" href="{% url 'patients:patient_list' %}">Clear</a>
+    {% endif %}
+  </div>
+</form>
+
+<div class="card shadow-sm">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>MRN</th>
+            <th>Name</th>
+            <th>DOB</th>
+            <th class="text-end"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in patients %}
+            <tr>
+              <td>{{ p.mrn }}</td>
+              <td>{{ p.full_name }}</td>
+              <td>{{ p.date_of_birth|default:"—" }}</td>
+              <td class="text-end">
+                <a class="btn btn-sm btn-outline-secondary"
+                   href="{% url 'patients:patient_detail' p.id %}">
+                  Open
+                </a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="4" class="text-muted text-center">No patients found.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

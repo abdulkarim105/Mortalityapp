@@ -1,0 +1,26 @@
+
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Generate risk (Encounter #{{ encounter.id }})</h2>
+
+<div class="card shadow-sm">
+  <div class="card-body">
+    <form method="post">
+      {% csrf_token %}
+
+      <div class="form-check mb-3">
+        {{ form.confirm }}
+        <label class="form-check-label">{{ form.confirm.label }}</label>
+        <div class="text-muted small">{{ form.confirm.help_text }}</div>
+      </div>
+
+      <button class="btn btn-primary">Generate risk</button>
+      <a class="btn btn-link" href="{% url 'patients:encounter_detail' encounter.id %}">
+        Cancel
+      </a>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

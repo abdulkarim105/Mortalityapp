@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="h3 mb-1">Observation set #{{ obs.id }}</h1>
+<div class="text-muted mb-3">
+  Encounter #{{ obs.encounter.id }} —
+  Recorded {{ obs.recorded_at }} by
+
+  {% if obs.recorded_by_name %}
+    {{ obs.recorded_by_name }}
+  {% elif obs.recorded_by %}
+    {{ obs.recorded_by }}
+  {% else %}
+    —
+  {% endif %}
+</div>
+
+
+
+<div class="card shadow-sm">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-sm table-hover align-middle mb-0">
+        <thead><tr><th>Feature</th><th>Value</th></tr></thead>
+        <tbody>
+          {% for k,v in features %}
+            <tr><td>{{ k }}</td><td>{{ v|default:"—" }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<p class="mt-3">
+  <a href="{% url 'patients:encounter_detail' obs.encounter.id %}">&larr; Back to encounter</a>
+</p>
+{% endblock %}

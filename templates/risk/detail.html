@@ -1,0 +1,93 @@
+
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Risk assessment #{{ ra.id }}</h2>
+<p class="text-muted">
+  Encounter #{{ ra.encounter.id }} • Predicted by {{ ra.created_by }} • {{ ra.created_at }}
+</p>
+
+<div class="row">
+  <div class="col-md-4">
+
+    <!-- Risk card -->
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <h5>180-day mortality risk</h5>
+        <div class="display-6">{{ ra.risk_180d|floatformat:2 }}%</div>
+
+        {% if ra.risk_band == "HIGH" %}
+          <span class="badge bg-danger">High risk</span>
+        {% elif ra.risk_band == "MEDIUM" %}
+          <span class="badge bg-warning text-dark">Medium risk</span>
+        {% else %}
+          <span class="badge bg-success">Low risk</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Doctor comment -->
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <h5>Doctor comment</h5>
+
+        <form method="post">
+          {% csrf_token %}
+          {{ comment_form.doctor_comment }}
+          <button type="submit" class="btn btn-primary">
+              Save comment
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Drivers -->
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h5>Clinically interpretable risk drivers</h5>
+        <p class="text-muted">
+          High severity: {{ high_count }} | Abnormal total: {{ total_abnormal }}
+        </p>
+
+        <ul>
+          {% for d in drivers %}
+            <li>
+              {{ d.icon }} {{ d.text }}
+              {% if d.severity == "HIGH" %}
+                <span class="badge bg-danger">high</span>
+              {% else %}
+                <span class="badge bg-warning text-dark">mild</span>
+              {% endif %}
+            </li>
+          {% empty %}
+            <li class="text-muted">No abnormal drivers detected.</li>
+          {% endfor %}
+        </ul>
+
+        {% if total_abnormal > shown_count %}
+          <a href="?all=1">Show all abnormal values</a>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Inputs -->
+  <div class="col-md-8">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h5>Inputs used</h5>
+        <table class="table table-sm">
+          {% for k,v in features %}
+          <tr>
+            <td>{{ k }}</td>
+            <td>{{ v|default:"—" }}</td>
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hospital AI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom UI styling -->
+    <style>
+        body {
+            background-color: #f6f8fb;
+        }
+
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,.08);
+        }
+
+        .btn-primary {
+            transition: background-color .15s ease,
+                        border-color .15s ease,
+                        transform .06s ease,
+                        box-shadow .06s ease;
+        }
+
+        .btn-primary:hover {
+            filter: brightness(.92);
+            box-shadow: 0 4px 10px rgba(0,0,0,.15);
+        }
+
+        .btn-primary:active {
+            filter: brightness(.85);
+            transform: translateY(1px);
+            box-shadow: 0 2px 5px rgba(0,0,0,.2);
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        .navbar {
+            box-shadow: 0 2px 5px rgba(0,0,0,.15);
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+
+        <!-- Brand -->
+        <a class="navbar-brand" href="{% url 'patients:patient_list' %}">
+            Hospital AI
+        </a>
+
+        <!-- Left navigation -->
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'patients:patient_list' %}">
+                        Patients
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Right user actions -->
+        <div class="d-flex align-items-center">
+            {% if user.is_authenticated %}
+                <span class="navbar-text me-3 text-white">
+                    Signed in as {{ user.username }}
+                </span>
+
+                <!-- LOGOUT MUST BE POST -->
+                <form method="post" action="{% url 'accounts:logout' %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-light btn-sm">
+                        Logout
+                    </button>
+                </form>
+            {% else %}
+                <a class="btn btn-outline-light btn-sm" href="{% url 'accounts:login' %}">
+                    Login
+                </a>
+            {% endif %}
+        </div>
+
+    </div>
+</nav>
+
+<!-- PAGE CONTENT -->
+<div class="container my-4">
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% block content %}
+    {% endblock %}
+
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
