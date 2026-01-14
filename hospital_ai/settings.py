@@ -103,7 +103,7 @@ ML_MODEL_VERSION = os.environ.get("ML_MODEL_VERSION", "2025-12-31-xgb-180d")
 
 # Risk bands (edit as your hospital policy requires)
 RISK_BAND_THRESHOLDS = {
-    "LOW": 0.10,
-    "MEDIUM": 0.30,
+    "LOW": 0.30,
+    "MEDIUM": 0.70,
     # >= MEDIUM threshold becomes HIGH
 }

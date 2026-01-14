@@ -1,23 +1,34 @@
-# risk/driver_logic.py
 from observations.models import ObservationSet
 from .clinical_ranges import NORMAL_RANGES, DRIVER_FEATURES
 
+
 def _severity_icon(severity: str) -> str:
-    return "🔴" if severity == "HIGH" else "🟡"
+    # Red for extreme values, Yellow for normal-abnormal values
+    if severity in ("TOO HIGH", "TOO LOW"):
+        return "🔴"
+    return "🟡"
+
 
 def build_clinical_drivers(obs: ObservationSet, show_all: bool = False):
     """
+    Severity rules:
+    - LOW       → slightly below normal  (yellow)
+    - HIGH      → slightly above normal  (yellow)
+    - TOO LOW   → far below normal       (red)
+    - TOO HIGH  → far above normal       (red)
+
     If show_all=False:
-      - if >3 HIGH severity drivers -> return top 5
+      - if >3 TOO severity drivers -> return top 5
       - else -> return top 3
 
     If show_all=True:
       - return all abnormal drivers
 
     Returns: (drivers, shown_count, high_count, total_abnormal)
-    drivers: list of dicts with keys: text, severity, icon, score, col
     """
     items = []
+
+    TOO_THRESHOLD = 0.50  # how far from normal to become "TOO HIGH / TOO LOW"
 
     for col in DRIVER_FEATURES:
         if col not in NORMAL_RANGES:
@@ -33,7 +44,7 @@ def build_clinical_drivers(obs: ObservationSet, show_all: bool = False):
         except (TypeError, ValueError):
             continue
 
-        # abnormal only
+        # Only abnormal values
         if low <= v <= high:
             continue
 
@@ -42,14 +53,14 @@ def build_clinical_drivers(obs: ObservationSet, show_all: bool = False):
         if v < low:
             delta = low - v
             arrow = "↓"
+            score = delta / width
+            severity = "TOO LOW" if score >= TOO_THRESHOLD else "LOW"
         else:
             delta = v - high
             arrow = "↑"
+            score = delta / width
+            severity = "TOO HIGH" if score >= TOO_THRESHOLD else "HIGH"
 
-        score = delta / width
-
-        # severity cutoffs (tunable)
-        severity = "HIGH" if score >= 0.50 else "MILD"
         icon = _severity_icon(severity)
 
         v_str = f"{v:.2f}".rstrip("0").rstrip(".")
@@ -67,7 +78,8 @@ def build_clinical_drivers(obs: ObservationSet, show_all: bool = False):
     # Sort most abnormal first
     items.sort(key=lambda x: x["score"], reverse=True)
 
-    high_count = sum(1 for x in items if x["severity"] == "HIGH")
+    # Count only extreme ones
+    high_count = sum(1 for x in items if x["severity"] in ("TOO HIGH", "TOO LOW"))
     total_abnormal = len(items)
 
     if show_all:

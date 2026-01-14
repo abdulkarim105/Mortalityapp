@@ -31,8 +31,8 @@ def risk_band_for_probability(p: float) -> str:
     """
     Convert probability (0..1) into LOW / MEDIUM / HIGH using settings thresholds.
     """
-    thr_low = settings.RISK_BAND_THRESHOLDS.get("LOW", 0.10)
-    thr_med = settings.RISK_BAND_THRESHOLDS.get("MEDIUM", 0.30)
+    thr_low = settings.RISK_BAND_THRESHOLDS.get("LOW", 0.30)
+    thr_med = settings.RISK_BAND_THRESHOLDS.get("MEDIUM", 0.70)
 
     if p >= thr_med:
         return "HIGH"

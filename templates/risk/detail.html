@@ -1,10 +1,9 @@
-
 {% extends "base.html" %}
 {% block content %}
 
 <h2>Risk assessment #{{ ra.id }}</h2>
 <p class="text-muted">
-  Encounter #{{ ra.encounter.id }} • Predicted by {{ ra.doctor_name}} • {{ ra.created_at }}
+  Encounter #{{ ra.encounter.id }} • Predicted by {{ ra.doctor_name }} • {{ ra.created_at }}
 </p>
 
 <div class="row">
@@ -53,10 +52,11 @@
           {% for d in drivers %}
             <li>
               {{ d.icon }} {{ d.text }}
-              {% if d.severity == "HIGH" %}
-                <span class="badge bg-danger">high</span>
+
+              {% if d.severity == "TOO HIGH" or d.severity == "TOO LOW" %}
+                <span class="badge bg-danger">{{ d.severity|lower }}</span>
               {% else %}
-                <span class="badge bg-warning text-dark">mild</span>
+                <span class="badge bg-warning text-dark">{{ d.severity|lower }}</span>
               {% endif %}
             </li>
           {% empty %}
