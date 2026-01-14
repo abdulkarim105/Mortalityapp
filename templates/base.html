@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,40 +11,13 @@
 
     <!-- Custom UI styling -->
     <style>
-        body {
-            background-color: #f6f8fb;
-        }
-
-        .card {
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,.08);
-        }
-
-        .btn-primary {
-            transition: background-color .15s ease,
-                        border-color .15s ease,
-                        transform .06s ease,
-                        box-shadow .06s ease;
-        }
-
-        .btn-primary:hover {
-            filter: brightness(.92);
-            box-shadow: 0 4px 10px rgba(0,0,0,.15);
-        }
-
-        .btn-primary:active {
-            filter: brightness(.85);
-            transform: translateY(1px);
-            box-shadow: 0 2px 5px rgba(0,0,0,.2);
-        }
-
-        textarea {
-            resize: vertical;
-        }
-
-        .navbar {
-            box-shadow: 0 2px 5px rgba(0,0,0,.15);
-        }
+        body { background-color: #f6f8fb; }
+        .card { border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,.08); }
+        .btn-primary { transition: background-color .15s ease, border-color .15s ease, transform .06s ease, box-shadow .06s ease; }
+        .btn-primary:hover { filter: brightness(.92); box-shadow: 0 4px 10px rgba(0,0,0,.15); }
+        .btn-primary:active { filter: brightness(.85); transform: translateY(1px); box-shadow: 0 2px 5px rgba(0,0,0,.2); }
+        textarea { resize: vertical; }
+        .navbar {box-shadow: 0 2px 5px rgba(0,0,0,.15);min-height: 60px;  padding-left: 10px;}
     </style>
 </head>
 <body>
@@ -53,9 +27,19 @@
     <div class="container-fluid">
 
         <!-- Brand -->
-        <a class="navbar-brand" href="{% url 'patients:patient_list' %}">
-            Hospital AI
+        <a class="navbar-brand d-flex align-items-center justify-content-start p-0"
+            href="{% url 'patients:patient_list' %}">
+
+               <img src="{% static 'img/logo.png' %}"
+                    alt="Hospital AI"
+                    style="height:80px; width:auto;"
+                    class="me-2">
+
+               <span class="fw-bold fs-4 text-white">Hospital AI</span>
         </a>
+
+
+
 
         <!-- Left navigation -->
         <div class="collapse navbar-collapse">
