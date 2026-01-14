@@ -31,7 +31,8 @@ class RiskAssessment(models.Model):
     )
 
     # ✅ ADD THIS (so DB NOT NULL column always gets a value, without changing UI)
-    doctor_name = models.CharField(max_length=120, blank=True, default="")
+    #doctor_name = models.CharField(max_length=120, blank=True, default="")
+    doctor_name = models.CharField(max_length=100, blank=True, null=True)
 
     doctor_comment = models.TextField(blank=True, default="")
 

@@ -9,6 +9,10 @@
     <form method="post">
       {% csrf_token %}
 
+      <div class="mb-3">
+        <label class="form-label">Doctor name</label>
+        {{ form.doctor_name }}
+      </div>
       <div class="form-check mb-3">
         {{ form.confirm }}
         <label class="form-check-label">{{ form.confirm.label }}</label>

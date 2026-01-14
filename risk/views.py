@@ -37,6 +37,7 @@ def generate(request, encounter_id):
                 risk_band=band,
                 model_version=settings.ML_MODEL_VERSION,
                 created_by=request.user,
+                doctor_name=form.cleaned_data["doctor_name"],  # ✅ typed value
                 doctor_comment=""
             )
 

@@ -17,3 +17,4 @@ if not User.objects.filter(username=username).exists():
     print("Superuser created")
 else:
     print("Superuser already exists")
+
