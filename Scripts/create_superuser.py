@@ -1,44 +1,48 @@
 # Scripts/create_superuser.py
 import os
+import sys
+
+# 1) Add repo root to PYTHONPATH FIRST
+ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
+
+# 2) Now Django settings
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "hospital_ai.settings")
+
 import django
+django.setup()
+
+from django.contrib.auth import get_user_model
 
 
 def main():
-    # Ensure Django is configured
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "hospital_ai.settings")
-    django.setup()
+    username = os.environ.get("DJANGO_SUPERUSER_USERNAME")
+    email = os.environ.get("DJANGO_SUPERUSER_EMAIL")
+    password = os.environ.get("DJANGO_SUPERUSER_PASSWORD")
 
-    from django.contrib.auth import get_user_model
+    if not username or not email or not password:
+        raise RuntimeError("Missing DJANGO_SUPERUSER_USERNAME / EMAIL / PASSWORD env vars")
 
     User = get_user_model()
 
-    username = os.environ.get("DJANGO_SUPERUSER_USERNAME", "Quantumsix")
-    email = os.environ.get("DJANGO_SUPERUSER_EMAIL", "rihad@example.com")
-    password = os.environ.get("DJANGO_SUPERUSER_PASSWORD", "datascience")
+    user, created = User.objects.get_or_create(
+        username=username,
+        defaults={"email": email},
+    )
 
-    # 1) Try exact username
-    user = User.objects.filter(username=username).first()
-
-    # 2) If not found, try any existing superuser and rename it
-    if not user:
-        user = User.objects.filter(is_superuser=True).first()
-        if user and user.username != username:
-            user.username = username
-            print(f"Renaming existing superuser to '{username}'")
-
-    if not user:
-        User.objects.create_superuser(username=username, email=email, password=password)
-        print("Superuser created")
-        return
-
-    # Update existing user
     user.email = email
     user.is_staff = True
     user.is_superuser = True
     user.set_password(password)
     user.save()
-    print("Superuser updated")
+
+    print(f"✅ Superuser {'created' if created else 'updated'}: {username}")
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        print("❌ create_superuser.py failed:", repr(e))
+        sys.exit(1)
