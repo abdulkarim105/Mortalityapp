@@ -41,16 +41,16 @@
     </div>
 
     <!-- Drivers -->
-    <div class="card shadow-sm">
+    <div class="card shadow-sm mb-3">
       <div class="card-body">
         <h5>Clinically interpretable risk drivers</h5>
         <p class="text-muted">
           High severity: {{ high_count }} | Abnormal total: {{ total_abnormal }}
         </p>
 
-        <ul>
+        <ul class="mb-0">
           {% for d in drivers %}
-            <li>
+            <li class="mb-2">
               {{ d.icon }} {{ d.text }}
 
               {% if d.severity == "TOO HIGH" or d.severity == "TOO LOW" %}
@@ -66,6 +66,38 @@
 
         {% if total_abnormal > shown_count %}
           <a href="?all=1">Show all abnormal values</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- SHAP contributors (NEW, below clinical drivers) -->
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h5>Top SHAP contributors</h5>
+        <p class="text-muted mb-2">
+          Ranked by absolute contribution to predicted mortality risk (highest first).
+        </p>
+
+        {% if top_shap %}
+          <ul class="mb-0">
+            {% for item in top_shap %}
+              <li class="mb-2">
+                {% if item.direction == "up" %}
+                  <span class="badge bg-danger me-2">↑ increases</span>
+                {% elif item.direction == "down" %}
+                  <span class="badge bg-success me-2">↓ decreases</span>
+                {% else %}
+                  <span class="badge bg-secondary me-2">no effect</span>
+                {% endif %}
+
+                <strong>{{ item.feature }}</strong>
+                = {{ item.value|default:"—" }}
+                <span class="text-muted ms-2">(SHAP: {{ item.shap_value|floatformat:4 }})</span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <div class="text-muted">No SHAP values available.</div>
         {% endif %}
       </div>
     </div>

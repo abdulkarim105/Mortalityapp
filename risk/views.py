@@ -7,7 +7,10 @@ from patients.models import Encounter
 from observations.models import ObservationSet
 from .models import RiskAssessment
 from .forms import GenerateRiskForm, RiskCommentForm
-from .services import predict_180d_mortality, risk_band_for_probability
+from .services import (
+    predict_180d_mortality_with_shap,
+    risk_band_for_probability,
+)
 from .driver_logic import build_clinical_drivers
 
 
@@ -27,7 +30,8 @@ def generate(request, encounter_id):
     if request.method == "POST":
         form = GenerateRiskForm(request.POST)
         if form.is_valid():
-            prob = predict_180d_mortality(latest_obs)
+            # Predict risk (we can also compute SHAP here, but we show SHAP on detail page)
+            prob, _ = predict_180d_mortality_with_shap(latest_obs, top_n=0)
             band = risk_band_for_probability(prob)
 
             ra = RiskAssessment.objects.create(
@@ -37,7 +41,7 @@ def generate(request, encounter_id):
                 risk_band=band,
                 model_version=settings.ML_MODEL_VERSION,
                 created_by=request.user,
-                doctor_name=form.cleaned_data["doctor_name"],  # ✅ typed value
+                doctor_name=form.cleaned_data["doctor_name"],
                 doctor_comment=""
             )
 
@@ -74,6 +78,10 @@ def detail(request, assessment_id):
 
     features = [(c, getattr(ra.observation_set, c)) for c in ObservationSet.feature_columns()]
 
+    # --- SHAP top contributors (descending by |contribution|) ---
+    # We recompute here so it always matches the stored observation_set.
+    _, top_shap = predict_180d_mortality_with_shap(ra.observation_set, top_n=10)
+
     return render(request, "risk/detail.html", {
         "ra": ra,
         "drivers": drivers,
@@ -83,4 +91,5 @@ def detail(request, assessment_id):
         "show_all": show_all,
         "features": features,
         "comment_form": form,
+        "top_shap": top_shap,  # <-- use this in template below clinical drivers
     })

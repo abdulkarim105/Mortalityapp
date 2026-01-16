@@ -2,103 +2,188 @@
 # column_name: (low, high, unit, label)
 
 NORMAL_RANGES = {
-    # GCS
+    # -------------------------
+    # Neuro
+    # -------------------------
     "GCS_max": (15, 15, "", "Maximum Glasgow Coma Scale"),
     "GCS_mean": (13, 15, "", "Mean Glasgow Coma Scale"),
 
+    # -------------------------
     # Lactate (mmol/L)
-    "Lactate_min": (0.5, 1.0, "mmol/L", "Minimum lactate"),
-    "Lactate_max": (2.0, 4.0, "mmol/L", "Maximum lactate"),
+    # -------------------------
+    "Lactate_min": (0.5, 2.0, "mmol/L", "Minimum lactate"),
     "Lactate_mean": (0.5, 2.0, "mmol/L", "Mean lactate"),
+    "Lactate_max": (0.5, 4.0, "mmol/L", "Maximum lactate"),
 
-    # BUN (mg/dL)
-    "BUN_min": (7, 10, "mg/dL", "Minimum BUN"),
+    # -------------------------
+    # Renal: BUN (mg/dL)
+    # -------------------------
+    "BUN_min": (7, 20, "mg/dL", "Minimum BUN"),
     "BUN_mean": (7, 20, "mg/dL", "Mean BUN"),
+    "BUN_max": (7, 25, "mg/dL", "Maximum BUN"),
 
-    # Bilirubin (mg/dL)
-    "Bilirubin_max": (1.2, 3.0, "mg/dL", "Maximum bilirubin"),
+    # -------------------------
+    # Liver: Bilirubin (mg/dL)
+    # -------------------------
     "Bilirubin_mean": (0.2, 1.2, "mg/dL", "Mean bilirubin"),
+    "Bilirubin_max": (0.2, 1.2, "mg/dL", "Maximum bilirubin"),
+
+    # Albumin (g/dL)
+    "Albumin_min": (3.5, 5.0, "g/dL", "Minimum albumin"),
+    "Albumin_mean": (3.5, 5.0, "g/dL", "Mean albumin"),
+    "Albumin_max": (3.5, 5.0, "g/dL", "Maximum albumin"),
+
+    # Alkaline Phosphatase (U/L) - broad normal range
+    "AlkPhos_min": (40, 130, "U/L", "Minimum alkaline phosphatase"),
+    "AlkPhos_mean": (40, 130, "U/L", "Mean alkaline phosphatase"),
+    "AlkPhos_max": (40, 130, "U/L", "Maximum alkaline phosphatase"),
+
+    # -------------------------
+    # Coagulation
+    # -------------------------
+    # PT (seconds)
+    "PT_min": (11, 14, "s", "Minimum prothrombin time (PT)"),
+    "PT_mean": (11, 14, "s", "Mean prothrombin time (PT)"),
+
+    # INR
+    "INR_min": (0.8, 1.2, "", "Minimum INR"),
+    "INR_mean": (0.8, 1.2, "", "Mean INR"),
+
+    # aPTT (seconds)
+    "aPTT_min": (25, 35, "s", "Minimum activated PTT (aPTT)"),
+    "aPTT_mean": (25, 35, "s", "Mean activated PTT (aPTT)"),
+
+    # -------------------------
+    # Electrolytes / metabolism
+    # -------------------------
+    # Phosphate (mg/dL)
+    "Phosphate_mean": (2.5, 4.5, "mg/dL", "Mean phosphate"),
+    "Phosphate_max": (2.5, 4.5, "mg/dL", "Maximum phosphate"),
 
     # Anion Gap (mEq/L)
-    "AG_MEAN": (8, 16, "mEq/L", "Mean anion gap"),
-    "AG_MAX": (16, 25, "mEq/L", "Maximum anion gap"),
-    "AG_MIN": (6, 8, "mEq/L", "Minimum anion gap"),
-    "AG_STD": (0, 6, "mEq/L", "Anion gap variability"),
+    "AG_mean": (8, 16, "mEq/L", "Mean anion gap"),
+    "AG_min": (8, 16, "mEq/L", "Minimum anion gap"),
+    "AG_max": (8, 16, "mEq/L", "Maximum anion gap"),
+    "AG_std": (0, 6, "mEq/L", "Anion gap variability"),
 
-    # Systolic BP (mmHg)
-    "SYSBP_MIN": (90, 100, "mmHg", "Minimum systolic BP"),
-    "SYSBP_MEAN": (90, 140, "mmHg", "Mean systolic BP"),
-    "SYSBP_STD": (0, 25, "mmHg", "Systolic BP variability"),
-
-    # Diastolic BP (mmHg)
-    "DIASBP_MIN": (60, 70, "mmHg", "Minimum diastolic BP"),
-    "DIASBP_MEAN": (60, 90, "mmHg", "Mean diastolic BP"),
-
-    # Age
-    "AGE": (18, 90, "years", "Patient age"),
+    # -------------------------
+    # Respiratory / oxygenation
+    # -------------------------
+    # PaO2 (mmHg) - wide range; low PaO2 is the main concern
+    "PaO2_mean": (80, 120, "mmHg", "Mean PaO₂"),
+    "PaO2_max": (80, 200, "mmHg", "Maximum PaO₂"),
 
     # Respiratory Rate (breaths/min)
-    "RR_MEAN": (12, 20, "breaths/min", "Mean respiratory rate"),
-    "RR_MAX": (20, 30, "breaths/min", "Maximum respiratory rate"),
-    "RR_MIN": (8, 12, "breaths/min", "Minimum respiratory rate"),
+    "RR_min": (8, 12, "breaths/min", "Minimum respiratory rate"),
+    "RR_mean": (12, 20, "breaths/min", "Mean respiratory rate"),
+    "RR_max": (12, 30, "breaths/min", "Maximum respiratory rate"),
 
+    # -------------------------
     # Temperature (°C)
-    "TEMP_STD": (0, 1.0, "°C", "Temperature variability"),
-    "TEMP_MIN": (36.0, 36.5, "°C", "Minimum temperature"),
+    # -------------------------
+    "TEMP_min": (36.0, 37.5, "°C", "Minimum temperature"),
+    "TEMP_std": (0.0, 1.0, "°C", "Temperature variability"),
 
+    # -------------------------
     # Heart Rate (bpm)
-    "HR_MEAN": (60, 100, "bpm", "Mean heart rate"),
-    "HR_MAX": (60, 140, "bpm", "Maximum heart rate"),
-    "HR_STD": (0, 20, "bpm", "Heart rate variability"),
+    # -------------------------
+    "HR_mean": (60, 100, "bpm", "Mean heart rate"),
+    "HR_max": (60, 140, "bpm", "Maximum heart rate"),
+    "HR_std": (0, 20, "bpm", "Heart rate variability"),
 
+    # -------------------------
+    # Blood pressure (mmHg)
+    # -------------------------
+    "SYSBP_min": (90, 120, "mmHg", "Minimum systolic BP"),
+    "SYSBP_mean": (90, 140, "mmHg", "Mean systolic BP"),
+    "SYSBP_std": (0, 25, "mmHg", "Systolic BP variability"),
+
+    "DIASBP_min": (60, 80, "mmHg", "Minimum diastolic BP"),
+    "DIASBP_mean": (60, 90, "mmHg", "Mean diastolic BP"),
+
+    # Mean Arterial Pressure (MAP)
+    "MEANBP_min": (65, 105, "mmHg", "Minimum MAP"),
+    "MEANBP_mean": (65, 105, "mmHg", "Mean arterial pressure (MAP)"),
+
+    # -------------------------
+    # Hematology
+    # -------------------------
     # RDW (%)
-    "RDW_max": (14.5, 18.0, "%", "Maximum RDW"),
+    "RDW_min": (11.0, 14.5, "%", "Minimum RDW"),
     "RDW_mean": (11.5, 14.5, "%", "Mean RDW"),
-    "RDW_min": (11.0, 11.5, "%", "Minimum RDW"),
+    "RDW_max": (11.5, 14.5, "%", "Maximum RDW"),
     "RDW_std": (0, 3, "%", "RDW variability"),
 
-    # Comorbidity score
+    # -------------------------
+    # Demographics / score
+    # -------------------------
+    "age": (18, 90, "years", "Patient age"),
     "age_adj_comorbidity_score": (0, 20, "", "Age-adjusted comorbidity score"),
-
-    # Mean Arterial Pressure (mmHg)
-    "MEANBP_MIN": (60, 65, "mmHg", "Minimum MAP"),
-    "MEANBP_MEAN": (65, 105, "mmHg", "Mean arterial pressure (MAP)"),
 }
 
 
+# Which features should appear as "Clinical drivers"
+# (You can include all features, but usually it's better to keep it clinically readable.)
 DRIVER_FEATURES = [
+    # Neuro
     "GCS_max",
     "GCS_mean",
+
+    # Lactate
     "Lactate_min",
-    "Lactate_max",
     "Lactate_mean",
+    "Lactate_max",
+
+    # Renal
     "BUN_min",
     "BUN_mean",
-    "Bilirubin_max",
+    "BUN_max",
+
+    # Liver / nutrition
     "Bilirubin_mean",
-    "AG_MEAN",
-    "AG_MAX",
-    "AG_MIN",
-    "AG_STD",
-    "SYSBP_MIN",
-    "SYSBP_MEAN",
-    "SYSBP_STD",
-    "DIASBP_MIN",
-    "DIASBP_MEAN",
-    "AGE",
-    "RR_MEAN",
-    "RR_MAX",
-    "RR_MIN",
-    "TEMP_STD",
-    "TEMP_MIN",
-    "HR_MEAN",
-    "HR_MAX",
-    "HR_STD",
-    "RDW_max",
+    "Bilirubin_max",
+    "Albumin_min",
+    "Albumin_mean",
+
+    # Coagulation
+    "PT_mean",
+    "INR_mean",
+    "aPTT_mean",
+
+    # Metabolic
+    "AG_mean",
+    "AG_max",
+    "AG_min",
+
+    "Phosphate_mean",
+
+    # Resp / O2
+    "PaO2_mean",
+    "RR_mean",
+    "RR_max",
+    "RR_min",
+
+    # Temp
+    "TEMP_min",
+
+    # HR
+    "HR_mean",
+    "HR_max",
+
+    # BP / perfusion
+    "SYSBP_min",
+    "SYSBP_mean",
+    "MEANBP_min",
+    "MEANBP_mean",
+
+    "DIASBP_min",
+    "DIASBP_mean",
+
+    # Hematology
     "RDW_mean",
-    "RDW_min",
-    "RDW_std",
+    "RDW_max",
+
+    # Scores / demo
+    "age",
     "age_adj_comorbidity_score",
-    "MEANBP_MIN",
-    "MEANBP_MEAN",
 ]

@@ -17,10 +17,10 @@ TOO_THRESHOLDS = {
     "GCS_max": 0.25,
 
     # Shock / perfusion
-    "SYSBP_MEAN": 0.35,
-    "SYSBP_MIN": 0.35,
-    "MEANBP_MEAN": 0.35,
-    "MEANBP_MIN": 0.35,
+    "SYSBP_mean": 0.35,
+    "SYSBP_min": 0.35,
+    "MEANBP_mean": 0.35,
+    "MEANBP_min": 0.35,
 
     # Lactate
     "Lactate_mean": 0.50,
@@ -30,30 +30,31 @@ TOO_THRESHOLDS = {
     # Renal
     "BUN_mean": 0.55,
     "BUN_min": 0.55,
+    "BUN_max": 0.55,
 
     # Liver
     "Bilirubin_mean": 0.55,
     "Bilirubin_max": 0.55,
 
     # Resp
-    "RR_MEAN": 0.50,
-    "RR_MIN": 0.50,
-    "RR_MAX": 0.50,
+    "RR_mean": 0.50,
+    "RR_min": 0.50,
+    "RR_max": 0.50,
 
     # Temp
-    "TEMP_MIN": 0.60,
-    "TEMP_STD": 0.60,
+    "TEMP_min": 0.60,
+    "TEMP_std": 0.60,
 
     # HR
-    "HR_MEAN": 0.55,
-    "HR_MAX": 0.55,
-    "HR_STD": 0.60,
+    "HR_mean": 0.55,
+    "HR_max": 0.55,
+    "HR_std": 0.60,
 
     # Anion gap
-    "AG_MEAN": 0.55,
-    "AG_MIN": 0.55,
-    "AG_MAX": 0.55,
-    "AG_STD": 0.60,
+    "AG_mean": 0.55,
+    "AG_min": 0.55,
+    "AG_max": 0.55,
+    "AG_std": 0.60,
 
     # RDW (often chronic marker; make less sensitive)
     "RDW_mean": 0.75,
@@ -62,13 +63,13 @@ TOO_THRESHOLDS = {
     "RDW_std": 0.75,
 
     # Demographics / score (usually not “too” clinically in same way)
-    "AGE": 0.90,
+    "age": 0.90,
     "age_adj_comorbidity_score": 0.90,
 
     # Optional extras if you add them to DRIVER_FEATURES later
-    "SYSBP_STD": 0.60,
-    "DIASBP_MEAN": 0.60,
-    "DIASBP_MIN": 0.60,
+    "SYSBP_std": 0.60,
+    "DIASBP_mean": 0.60,
+    "DIASBP_min": 0.60,
 }
 
 
@@ -77,10 +78,10 @@ def _get_too_threshold(feature_name: str) -> float:
     if feature_name in TOO_THRESHOLDS:
         return TOO_THRESHOLDS[feature_name]
 
-    # Case-insensitive fallback (handles SYSBP_MEAN vs sysbp_mean)
-    fn = feature_name.upper()
+    # Case-insensitive fallback (handles SYSBP_mean vs SYSBP_MEAN etc.)
+    fn = feature_name.lower()
     for k, v in TOO_THRESHOLDS.items():
-        if k.upper() == fn:
+        if k.lower() == fn:
             return v
 
     return DEFAULT_TOO_THRESHOLD
@@ -112,6 +113,7 @@ def build_clinical_drivers(obs: ObservationSet, show_all: bool = False):
 
         low, high, unit, label = rng
 
+        # IMPORTANT: use hasattr/getattr safely
         val = getattr(obs, col, None)
         if val is None:
             continue
@@ -150,7 +152,7 @@ def build_clinical_drivers(obs: ObservationSet, show_all: bool = False):
                 "severity": severity,
                 "icon": icon,
                 "score": float(score),
-                "threshold": float(too_thr),  # optional: useful for debugging/display
+                "threshold": float(too_thr),  # optional debugging
             }
         )
 
