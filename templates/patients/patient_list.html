@@ -34,6 +34,7 @@
             <th>MRN</th>
             <th>Name</th>
             <th>DOB</th>
+            <th>180d Mortality Risk</th>
             <th class="text-end"></th>
           </tr>
         </thead>
@@ -43,6 +44,25 @@
               <td>{{ p.mrn }}</td>
               <td>{{ p.full_name }}</td>
               <td>{{ p.date_of_birth|default:"—" }}</td>
+
+              <td>
+                {% if p.latest_risk_180d is not None %}
+                  <span class="fw-semibold">{{ p.latest_risk_180d|floatformat:1 }}%</span>
+
+                  {% if p.latest_risk_band %}
+                    <span class="badge ms-2
+                      {% if p.latest_risk_band == 'HIGH' %}text-bg-danger
+                      {% elif p.latest_risk_band == 'MEDIUM' %}text-bg-warning
+                      {% elif p.latest_risk_band == 'LOW' %}text-bg-success
+                      {% else %}text-bg-secondary{% endif %}">
+                      {{ p.latest_risk_band }}
+                    </span>
+                  {% endif %}
+                {% else %}
+                  <span class="text-muted">—</span>
+                {% endif %}
+              </td>
+
               <td class="text-end">
                 <a class="btn btn-sm btn-outline-secondary"
                    href="{% url 'patients:patient_detail' p.id %}">
@@ -52,7 +72,7 @@
             </tr>
           {% empty %}
             <tr>
-              <td colspan="4" class="text-muted text-center">No patients found.</td>
+              <td colspan="5" class="text-muted text-center">No patients found.</td>
             </tr>
           {% endfor %}
         </tbody>

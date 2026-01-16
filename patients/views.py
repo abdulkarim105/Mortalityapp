@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required, permission_required
-from django.db.models import Q
+from django.db.models import Q, OuterRef, Subquery, F
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_http_methods
 
@@ -15,7 +15,23 @@ from risk.models import RiskAssessment
 def patient_list(request):
     q = request.GET.get("q", "").strip()
 
-    patients = Patient.objects.all().order_by("full_name")
+    # Latest risk per patient (across all encounters)
+    latest_risk_sq = RiskAssessment.objects.filter(
+        encounter__patient=OuterRef("pk")
+    ).order_by("-created_at").values("risk_180d")[:1]
+
+    # Latest risk band per patient (LOW/MEDIUM/HIGH) for display
+    latest_band_sq = RiskAssessment.objects.filter(
+        encounter__patient=OuterRef("pk")
+    ).order_by("-created_at").values("risk_band")[:1]
+
+    patients = (
+        Patient.objects.all()
+        .annotate(latest_risk_180d=Subquery(latest_risk_sq))
+        .annotate(latest_risk_band=Subquery(latest_band_sq))
+        # Sort by risk DESC (nulls last), then by name
+        .order_by(F("latest_risk_180d").desc(nulls_last=True), "full_name")
+    )
 
     if q:
         patients = patients.filter(
