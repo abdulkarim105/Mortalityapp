@@ -27,7 +27,7 @@ Login with your superuser and create users, then assign them to groups:
 - Doctor
 - Admin
 
-## 2) Add your trained model
+## 2) Add  trained model
 
 From your notebook you should have:
 - XGBoost_mortality_180days.joblib
@@ -42,7 +42,7 @@ Or set an environment variable:
 
 - Use PostgreSQL (not SQLite)
 - Put behind HTTPS (nginx) + gunicorn
-- Enable 2FA (recommended)
+- Enable 2FA 
 - Configure backups + retention
 - Integrate with HIS/LIS for automatic vitals/labs ingestion
 
