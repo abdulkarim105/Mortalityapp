@@ -1,21 +1,21 @@
 FEATURE_RANGES = {
-    "GCS_max": (0.0, 8.0),
-    "GCS_mean": (0.0, 8.0),
+    "GCS_max": (0.0, 50.0),
+    "GCS_mean": (0.0, 50.0),
 
-    "Lactate_min": (0.0, 25.0),
-    "Lactate_max": (0.0, 35.0),
-    "Lactate_mean": (0.0, 30.0),
+    "Lactate_min": (0.0, 50.0),
+    "Lactate_max": (0.0, 70.0),
+    "Lactate_mean": (0.0, 60.0),
 
-    "BUN_min": (0.0, 200.0),
-    "BUN_mean": (0.0, 220.0),
-    "BUN_max": (0.0, 250.0),
+    "BUN_min": (0.0, 300.0),
+    "BUN_mean": (0.0, 320.0),
+    "BUN_max": (0.0, 350.0),
 
-    "Bilirubin_max": (0.0, 85.0),
-    "Bilirubin_mean": (0.0, 75.0),
+    "Bilirubin_max": (0.0, 185.0),
+    "Bilirubin_mean": (0.0, 175.0),
 
-    "Albumin_mean": (0.0, 6.0),
-    "Albumin_min": (0.0, 6.0),
-    "Albumin_max": (0.0, 6.0),
+    "Albumin_mean": (0.0, 60.0),
+    "Albumin_min": (0.0, 60.0),
+    "Albumin_max": (0.0, 60.0),
 
     "AlkPhos_mean": (0.0, 2000.0),
     "AlkPhos_max": (0.0, 3000.0),

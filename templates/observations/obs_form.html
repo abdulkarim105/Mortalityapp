@@ -12,9 +12,9 @@
     <form method="post">
       {% csrf_token %}
 
-      {# Top row: Recorded fields only #}
+      <!-- Top row: Recorded fields + JSON upload -->
       <div class="row g-3 mb-2">
-        <div class="col-md-6">
+        <div class="col-md-4">
           <label class="form-label" for="{{ form.recorded_at.id_for_label }}">
             {{ form.recorded_at.label }}
           </label>
@@ -27,7 +27,7 @@
           {% endfor %}
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-4">
           <label class="form-label" for="{{ form.recorded_by_name.id_for_label }}">
             {{ form.recorded_by_name.label }}
           </label>
@@ -39,11 +39,24 @@
             <div class="text-danger small">{{ error }}</div>
           {% endfor %}
         </div>
+
+        <div class="col-md-4">
+          <label class="form-label"><strong>Upload JSON</strong></label>
+          <input type="file" id="jsonUpload" accept=".json,application/json" class="form-control">
+          <div class="form-text">
+            Upload raw ICU JSON or feature JSON.
+          </div>
+        </div>
       </div>
+
+      <!-- Message boxes -->
+      <div id="jsonErrors" class="alert alert-danger d-none"></div>
+      <div id="jsonWarnings" class="alert alert-warning d-none"></div>
+      <div id="jsonInfo" class="alert alert-info d-none"></div>
 
       <hr class="my-3">
 
-      {# Features: keep your old 3-column layout #}
+      <!-- Features -->
       <div class="row g-3">
         {% for field in form %}
           {% if field.name != "recorded_at" and field.name != "recorded_by_name" %}
@@ -51,19 +64,12 @@
               <label class="form-label" for="{{ field.id_for_label }}">
                 {{ field.label }}
               </label>
-
               {{ field }}
-
               {% if field.help_text %}
-                <div class="form-text">
-                  {{ field.help_text }}
-                </div>
+                <div class="form-text">{{ field.help_text }}</div>
               {% endif %}
-
               {% for error in field.errors %}
-                <div class="text-danger small">
-                  {{ error }}
-                </div>
+                <div class="text-danger small">{{ error }}</div>
               {% endfor %}
             </div>
           {% endif %}
@@ -82,12 +88,177 @@
 </div>
 
 <script>
-  // Bootstrap styling for all form inputs
+document.addEventListener("DOMContentLoaded", function () {
+
+  // Style inputs
   document.querySelectorAll("input, select, textarea").forEach(el => {
-    if (!el.classList.contains("form-control")) {
-      el.classList.add("form-control");
+    if (!el.classList.contains("form-control")) el.classList.add("form-control");
+  });
+
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      const cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + "=")) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+  function showBox(id, html) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (html) {
+      el.innerHTML = html;
+      el.classList.remove("d-none");
+    } else {
+      el.classList.add("d-none");
+      el.innerHTML = "";
+    }
+  }
+
+  function resetHighlights() {
+    document.querySelectorAll("input[name], select[name], textarea[name]").forEach(el => {
+      if (el.name === "recorded_at" || el.name === "recorded_by_name") return;
+      el.classList.remove("border", "border-2", "border-success", "border-warning");
+    });
+  }
+
+  function markFilled(el) {
+    el.classList.add("border", "border-2", "border-success");
+    el.classList.remove("border-warning");
+  }
+
+  function markMissing(el) {
+    el.classList.add("border", "border-2", "border-warning");
+    el.classList.remove("border-success");
+  }
+
+  async function postToEngineerEndpoint(payload) {
+    const csrftoken = getCookie("csrftoken");
+
+    const resp = await fetch("/engineer-features/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": csrftoken
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const contentType = resp.headers.get("content-type") || "";
+    if (!contentType.includes("application/json")) {
+      const text = await resp.text();
+      throw new Error("Server returned non-JSON (status " + resp.status + "): " + text.substring(0, 200));
+    }
+
+    const result = await resp.json();
+
+    if (!resp.ok || result.status !== "ok") {
+      throw new Error((result.message || "Feature extraction failed.") +
+                      (result.details ? ("\n" + result.details) : ""));
+    }
+    return result;
+  }
+
+  function fillFeatureFields(features, missingFromServer, unknownFromServer) {
+    resetHighlights();
+
+    const missingByScan = [];
+    const formFieldNames = new Set();
+
+    document.querySelectorAll("input[name], select[name], textarea[name]").forEach(el => {
+      if (el.name && el.name !== "recorded_at" && el.name !== "recorded_by_name") {
+        formFieldNames.add(el.name);
+      }
+    });
+
+    formFieldNames.forEach(name => {
+      const el = document.querySelector('[name="' + name + '"]');
+      if (!el) return;
+
+      const val = features ? features[name] : undefined;
+
+      if (val !== undefined && val !== null && val !== "") {
+        let v = val;
+        if (typeof v === "number") v = Math.round(v * 1000) / 1000;
+        if (typeof v === "string" && v.trim() !== "" && !isNaN(v)) {
+          const num = Number(v);
+          v = Math.round(num * 1000) / 1000;
+        }
+        el.value = v;
+        markFilled(el);
+      } else {
+        if (!el.value) {
+          markMissing(el);
+          missingByScan.push(name);
+        }
+      }
+    });
+
+    const finalMissing =
+      (missingFromServer && missingFromServer.length) ? missingFromServer : missingByScan;
+
+    showBox(
+      "jsonWarnings",
+      finalMissing.length
+        ? ("<b>Warning:</b> " + finalMissing.length +
+           " features are missing:<br><small>" + finalMissing.join(", ") + "</small>")
+        : ""
+    );
+
+    return finalMissing;
+  }
+
+  const jsonInput = document.getElementById("jsonUpload");
+  if (!jsonInput) return;
+
+  jsonInput.addEventListener("change", async function (e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    showBox("jsonErrors", "");
+    showBox("jsonWarnings", "");
+    showBox("jsonInfo", "");
+
+    let data;
+    try {
+      data = JSON.parse(await file.text());
+    } catch {
+      showBox("jsonErrors", "Invalid JSON file.");
+      return;
+    }
+
+    if (Array.isArray(data) && data.length === 1 && typeof data[0] === "object") {
+      data = data[0];
+    }
+
+    try {
+      const result = await postToEngineerEndpoint(data);
+
+      const missingList = fillFeatureFields(
+        result.features,
+        result.missing_features,
+        result.unknown_keys
+      );
+
+      if (result.validation_message) {
+        showBox("jsonInfo", "<b>Imported:</b> " + result.validation_message);
+      } else {
+        showBox("jsonInfo", "<b>Imported:</b> JSON loaded successfully.");
+      }
+
+    } catch (err) {
+      showBox("jsonErrors", err.message || "Failed to import JSON.");
     }
   });
+
+});
 </script>
 
 {% endblock %}
