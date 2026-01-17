@@ -19,9 +19,10 @@ from .driver_logic import build_clinical_drivers
 def generate(request, encounter_id):
     encounter = get_object_or_404(Encounter, id=encounter_id)
 
+    # ✅ FIX: use newest created ObservationSet (id) instead of recorded_at
     latest_obs = ObservationSet.objects.filter(
         encounter=encounter
-    ).order_by("-recorded_at").first()
+    ).order_by("-id").first()
 
     if not latest_obs:
         messages.error(request, "No observations found. Enter vitals/labs first.")
@@ -91,5 +92,5 @@ def detail(request, assessment_id):
         "show_all": show_all,
         "features": features,
         "comment_form": form,
-        "top_shap": top_shap,  # <-- use this in template below clinical drivers
+        "top_shap": top_shap,
     })
