@@ -5,14 +5,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-only-change-me")
 DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"
-#ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
+
+# ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
 ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
-    ".onrender.com",   # allow all Render subdomains
+    ".onrender.com",          # allow all Render subdomains
     "mortalityapp.onrender.com",  # your exact app URL
 ]
-
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -102,6 +102,13 @@ ML_MODEL_PATH = os.environ.get(
     str(BASE_DIR / "risk" / "ml_models" / "XGBoost_mortality_180days.joblib"),
 )
 ML_MODEL_VERSION = os.environ.get("ML_MODEL_VERSION", "2025-12-31-xgb-180d")
+
+# SHAP background (fixed baseline for reproducible SHAP values)
+# Put this file here: risk/ml_models/shap_background.joblib
+SHAP_BACKGROUND_PATH = os.environ.get(
+    "SHAP_BACKGROUND_PATH",
+    str(BASE_DIR / "risk" / "ml_models" / "shap_background.joblib"),
+)
 
 # Risk bands (edit as your hospital policy requires)
 RISK_BAND_THRESHOLDS = {
