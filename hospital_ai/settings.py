@@ -103,12 +103,6 @@ ML_MODEL_PATH = os.environ.get(
 )
 ML_MODEL_VERSION = os.environ.get("ML_MODEL_VERSION", "2025-12-31-xgb-180d")
 
-# SHAP background (fixed baseline for reproducible SHAP values)
-# Put this file here: risk/ml_models/shap_background.joblib
-SHAP_BACKGROUND_PATH = os.environ.get(
-    "SHAP_BACKGROUND_PATH",
-    str(BASE_DIR / "risk" / "ml_models" / "shap_background.joblib"),
-)
 
 # Risk bands (edit as your hospital policy requires)
 RISK_BAND_THRESHOLDS = {
